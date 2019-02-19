@@ -14,17 +14,17 @@ int main() {
    filePath = malloc(500);
    char* path = "writer.c";
    char userInput[500];
-   struct echo {
+   struct shm_echo {
       bool[3] isWaiting;
       char[500] strToSend;
-   }
+   };
 
    // add signal handler for ctrl c to let readers know they have exited
 
    //key_t key = ftok(getcwd("writer.c",8), 1600);
    key_t key = ftok("writer.c",1600);
    printf("Key: %lu\n",key);
-   struct echo *msgToSnd = (struct* echo);
+   struct shm_echo *msgToSnd = (struct* shm_echo);
 
    if((shmId = shmget(key, MEM_SIZE, IPC_CREAT|S_IRUSR|S_IWUSR)) < 0) {
       perror("Error accessing shared memory");
@@ -37,14 +37,24 @@ int main() {
       perror("Error attaching shared memory");
       exit(1);
    }
-   msgToSend->isWaiting
+    // initial array values
+    msgToSnd->isWaiting[0] = true;
+    msgToSnd->isWaiting[1] = true;
+    msgToSnd->isWaiting[2] = true;
    // while
    // true means displayed - and waiting
    // write to shared memory
-   while(true) {	   
-      printf("Enter a line: ");
-      fgets(userInput, 500, stdin);
-
+   while(true) {
+      // should we check if we can write to shmem first??
+      // first we need to get our struct from shared memory
+      //&shmPtr = msgToSnd;
+      // check if we can send the next message
+       if(msgToSnd->isWaiting[0] && msgToSnd->isWaiting[1] && msgToSnd->isWaiting[2]) {
+           printf("Enter a line: ");
+           fgets(userInput, 500, stdin);
+           memcpy(msgToSnd->strToSend, userInput, 500);
+       }
+      
    }
 
 
