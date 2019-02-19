@@ -15,7 +15,7 @@ int main() {
    char* path = "writer.c";
    char userInput[500];
    struct shm_echo {
-      bool[3] isWaiting;
+      bool isWaiting[3];
       char[500] strToSend;
    };
 
