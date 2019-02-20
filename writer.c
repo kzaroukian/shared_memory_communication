@@ -21,6 +21,7 @@ int main() {
    char userInput[500];
    struct shm_echo {
       bool isWaiting[3];
+      int numConnected;
       char strToSend[500];
    };
     
@@ -47,27 +48,37 @@ int main() {
    struct shm_echo *msgToSnd = (struct shm_echo*) shmPtr;
 
     // initial array values
-    msgToSnd->isWaiting[0] = true;
+    // writer
+    // initially nothing has been written
+    msgToSnd->isWaiting[0] = false;
+    // readers
+    // initally ready to receive and write to the readers
     msgToSnd->isWaiting[1] = true;
     msgToSnd->isWaiting[2] = true;
+    
+    msgToSnd->numConnected = 0;
    // while
    // true means displayed - and waiting
    // write to shared memory
    while(true) {
       // check if we can send the next message
-       if(msgToSnd->isWaiting[0] && msgToSnd->isWaiting[1] && msgToSnd->isWaiting[2]) {
+       if(!msgToSnd->isWaiting[0] && msgToSnd->isWaiting[1] && msgToSnd->isWaiting[2]) {
            printf("Enter a line: ");
            fgets(userInput, 500, stdin);
            memcpy(msgToSnd->strToSend, userInput, 500);
+           // means we have updated with a new message
+           msgToSnd->isWaiting[0] = true;
            
            if(strncmp(userInput, "exit", 4) == 0) {
                exit(0);
            }
+       } else {
+           // no message to send
+           //printf("else is reached\n");
+           msgToSnd->isWaiting[0] = false;
        }
-      
    }
-
-
+    
    // when we want to detacth
    if (shmdt(shmPtr) < 0) {
       perror("Error detatching");

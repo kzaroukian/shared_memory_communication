@@ -13,9 +13,11 @@
 int main(){
     int shmId;
     char *shmPtr;
+    int i;
     
     struct shm_echo {
         bool isWaiting[3];
+        int numConnected;
         char strToSend[500];
     };
     
@@ -32,16 +34,24 @@ int main(){
       		perror ("can't attach\n"); 
       		exit (1); 
    	}
-
+    
 	//get struct pointer from shared memory
     struct shm_echo *msgReceived = (struct shm_echo*) shmPtr;
+    msgReceived->numConnected += 1;
+    if (msgReceived->numConnected > 2) {
+        msgReceived->numConnected = 2;
+    }
+    i = msgReceived->numConnected;
+
 
 	while(1){
-        while (msgReceived->isWaiting[0]) {
+        if (msgReceived->isWaiting[0] && !msgReceived->isWaiting[i]) {
             printf("%s\n",msgReceived->strToSend);
-            msgReceived->isWaiting[0] = true;
+            msgReceived->isWaiting[i] = true;
+        } else {
+            printf("else is reached\n");
+            //msgReceived->isWaiting[i] = false;
         }
-        msgReceived->isWaiting[0] = false;
 	
 		//while(struct.iswaiting[i] or exit);
 		//	if exit:
