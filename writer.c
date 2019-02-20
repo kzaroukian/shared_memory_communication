@@ -50,7 +50,7 @@ int main() {
     // initial array values
     // writer
     // initially nothing has been written
-    msgToSnd->isWaiting[0] = false;
+    msgToSnd->isWaiting[0] = true;
     // readers
     // initally ready to receive and write to the readers
     msgToSnd->isWaiting[1] = true;
@@ -62,7 +62,7 @@ int main() {
    // write to shared memory
    while(true) {
       // check if we can send the next message
-       if(!msgToSnd->isWaiting[0] && msgToSnd->isWaiting[1] && msgToSnd->isWaiting[2]) {
+       if(msgToSnd->isWaiting[0] && msgToSnd->isWaiting[1] && msgToSnd->isWaiting[2]) {
            printf("Enter a line: ");
            fgets(userInput, 500, stdin);
            memcpy(msgToSnd->strToSend, userInput, 500);
@@ -76,6 +76,7 @@ int main() {
            // no message to send
            //printf("else is reached\n");
            msgToSnd->isWaiting[0] = false;
+           //sleep(5);
        }
    }
     

@@ -45,13 +45,17 @@ int main(){
 
 
 	while(1){
-        if (msgReceived->isWaiting[0] && !msgReceived->isWaiting[i]) {
+        if (msgReceived->isWaiting[0] && msgReceived->isWaiting[i]) {
             printf("%s\n",msgReceived->strToSend);
             msgReceived->isWaiting[i] = true;
+            msgReceived->isWaiting[0] = true;
         } else {
-            printf("else is reached\n");
+            //printf("else is reached\n");
+            //sleep(5);
             //msgReceived->isWaiting[i] = false;
         }
+        //msgReceived->isWaiting[i] = true;
+
 	
 		//while(struct.iswaiting[i] or exit);
 		//	if exit:
