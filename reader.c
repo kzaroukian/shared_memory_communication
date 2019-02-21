@@ -11,9 +11,12 @@
 #define MEM_SIZE 4096
 
 // Lab 5 Reader by Marc Chesebro and Kaylin Zaroukian
+
+void interruptHandler(int sigNum);
+char *shmPtr;
+
 int main(){
     int shmId;
-    char *shmPtr;
     int i;
     
     struct shm_echo {
@@ -22,6 +25,7 @@ int main(){
         int numPrinted;
         char strToSend[500];
     };
+    signal(SIGINT, interruptHandler);
     
 	//get key using ftok()
 	key_t key = ftok("writer.c", 1);
@@ -44,6 +48,7 @@ int main(){
     }
     i = msgReceived->numConnected;
  	msgReceived->isWaiting[i] = true;
+
 	
 	while(1){
         	if (msgReceived->numPrinted < msgReceived->numConnected && msgReceived->isWaiting[i]) {
@@ -53,4 +58,14 @@ int main(){
         	}
 	}
 
+}
+
+void interruptHandler(int sigNum) {
+    // when we want to detacth
+    if (shmdt(shmPtr) < 0) {
+        perror("Error detatching");
+        exit(1);
+    }
+    printf("Exiting...\n");
+    exit(0);
 }

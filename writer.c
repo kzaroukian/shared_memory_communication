@@ -16,18 +16,18 @@ void interruptHandler(int sigNum);
 
 
 int shmId;
+char *shmPtr;
 
 int main() {
-   char *shmPtr;
    char userInput[500];
    struct shm_echo {
-      bool isWaiting[3];
-      int numConnected;
-      int numPrinted;
-      char strToSend[500];
-   };
+       bool isWaiting[3];
+       int numConnected;
+       int numPrinted;
+       char strToSend[500];
+    };
     
-    signal(SIGINT, interruptHandler);
+   signal(SIGINT, interruptHandler);
 
    key_t key = ftok("writer.c",1);
    printf("Key: %d\n",key);
@@ -46,12 +46,7 @@ int main() {
     
    struct shm_echo *msgToSnd = (struct shm_echo*) shmPtr;
 
-    // initial array values
-    // writer
-    // initially nothing has been written
     msgToSnd->isWaiting[0] = true;
-    // readers
-    // initally ready to receive and write to the readers
     msgToSnd->isWaiting[1] = true;
     msgToSnd->isWaiting[2] = true;
     
@@ -66,9 +61,6 @@ int main() {
         msgToSnd->isWaiting[2] = true;
         msgToSnd->numPrinted = 0;
 
-        if(strncmp(userInput, "exit", 4) == 0) {
-            exit(0);
-        }
     }
     
    // when we want to detacth
@@ -76,16 +68,20 @@ int main() {
       perror("Error detatching");
       exit(1);
    }
-   
       
    return 0;
 }
 
 void interruptHandler(int sigNum) {
-	if (shmctl (shmId, IPC_RMID, 0) < 0) { 
-		perror ("can't deallocate\n"); 
-		exit(1); 
-	}
+    if (shmdt(shmPtr) < 0) {
+        perror("Error detatching");
+        exit(1);
+    }
+
+    if (shmctl (shmId, IPC_RMID, 0) < 0) {
+        perror ("can't deallocate\n");
+        exit(1);
+    }
 	printf("Exiting...\n");
 	exit(0);
 }
