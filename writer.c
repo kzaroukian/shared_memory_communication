@@ -12,8 +12,10 @@
 
 void interruptHandler(int sigNum);
 
+
+int shmId;
+
 int main() {
-   int shmId;
    char *shmPtr;
    char* filePath;
    filePath = malloc(500);
@@ -94,6 +96,10 @@ int main() {
 }
 
 void interruptHandler(int sigNum) {
-    printf("Exiting...\n");
-    exit(0);
+	if (shmctl (shmId, IPC_RMID, 0) < 0) { 
+		perror ("can't deallocate\n"); 
+		exit(1); 
+	}
+	printf("Exiting...\n");
+	exit(0);
 }
