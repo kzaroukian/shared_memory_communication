@@ -10,6 +10,7 @@
 #include <signal.h>
 #define MEM_SIZE 4096
 
+// Lab 5 Reader by Marc Chesebro and Kaylin Zaroukian
 int main(){
     int shmId;
     char *shmPtr;
@@ -17,9 +18,9 @@ int main(){
     
     struct shm_echo {
         bool isWaiting[3];
-	bool turn;
+        bool turn;
         int numConnected;
-	int numPrinted;
+        int numPrinted;
         char strToSend[500];
     };
     
@@ -47,8 +48,8 @@ int main(){
 	
 	while(1){
         	if (msgReceived->numPrinted < msgReceived->numConnected && msgReceived->isWaiting[i]) {
-            		printf("%s\n",msgReceived->strToSend);
-			msgReceived->numPrinted++;
+                printf("%s\n",msgReceived->strToSend);
+                msgReceived->numPrinted++;
 	    		msgReceived->isWaiting[i] = false;
         	}
 	}

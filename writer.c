@@ -10,6 +10,8 @@
 #include <signal.h>
 #define MEM_SIZE 4096
 
+// Lab 5 Writer by Marc Chesebro and Kaylin Zaroukian
+
 void interruptHandler(int sigNum);
 
 
@@ -30,9 +32,6 @@ int main() {
     
     signal(SIGINT, interruptHandler);
 
-   // add signal handler for ctrl c to let readers know they have exited
-
-   //key_t key = ftok(getcwd("writer.c",8), 1600);
    key_t key = ftok("writer.c",1);
    printf("Key: %d\n",key);
 
@@ -47,7 +46,7 @@ int main() {
       perror("Error attaching shared memory");
       exit(1);
    }
-   //struct shm_echo *msgToSnd = (struct shm_echo*)malloc(sizeof(struct shm_echo));
+    
    struct shm_echo *msgToSnd = (struct shm_echo*) shmPtr;
 
     // initial array values
@@ -60,30 +59,20 @@ int main() {
     msgToSnd->isWaiting[2] = true;
     
     msgToSnd->numConnected = 0;
-   // while
-   // true means displayed - and waiting
-   // write to shared memory
+
    while(true) {
       // check if we can send the next message
-       if(msgToSnd->numPrinted == msgToSnd->numConnected){//msgToSnd->isWaiting[0] && msgToSnd->isWaiting[1] && msgToSnd->isWaiting[2]) {
            printf("Enter a line: ");
            fgets(userInput, 500, stdin);
            memcpy(msgToSnd->strToSend, userInput, 500);
-           // means we have updated with a new message
-           msgToSnd->isWaiting[1] = true; 
+           msgToSnd->isWaiting[1] = true;
            msgToSnd->isWaiting[2] = true;
-	   msgToSnd->numPrinted = 0;
+           msgToSnd->numPrinted = 0;
 
            if(strncmp(userInput, "exit", 4) == 0) {
                exit(0);
            }
-       } //else {
-           // no message to send
-           //printf("else is reached\n");
-           //msgToSnd->isWaiting[0] = false;
-           //sleep(5)
-       //}
-   }
+       }
     
    // when we want to detacth
    if (shmdt(shmPtr) < 0) {
