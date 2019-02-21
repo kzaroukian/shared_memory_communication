@@ -19,9 +19,6 @@ int shmId;
 
 int main() {
    char *shmPtr;
-   char* filePath;
-   filePath = malloc(500);
-   char* path = "writer.c";
    char userInput[500];
    struct shm_echo {
       bool isWaiting[3];
@@ -60,19 +57,19 @@ int main() {
     
     msgToSnd->numConnected = 0;
 
-   while(true) {
+   while(1) {
       // check if we can send the next message
-           printf("Enter a line: ");
-           fgets(userInput, 500, stdin);
-           memcpy(msgToSnd->strToSend, userInput, 500);
-           msgToSnd->isWaiting[1] = true;
-           msgToSnd->isWaiting[2] = true;
-           msgToSnd->numPrinted = 0;
+        printf("Enter a line: ");
+        fgets(userInput, 500, stdin);
+        memcpy(msgToSnd->strToSend, userInput, 500);
+        msgToSnd->isWaiting[1] = true;
+        msgToSnd->isWaiting[2] = true;
+        msgToSnd->numPrinted = 0;
 
-           if(strncmp(userInput, "exit", 4) == 0) {
-               exit(0);
-           }
-       }
+        if(strncmp(userInput, "exit", 4) == 0) {
+            exit(0);
+        }
+    }
     
    // when we want to detacth
    if (shmdt(shmPtr) < 0) {

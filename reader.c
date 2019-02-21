@@ -18,7 +18,6 @@ int main(){
     
     struct shm_echo {
         bool isWaiting[3];
-        bool turn;
         int numConnected;
         int numPrinted;
         char strToSend[500];
